@@ -1,19 +1,10 @@
 
-import { Event } from './pages/Event'
 
-import { gql, useQuery } from '@apollo/client'
-import { useEffect } from 'react'
+import { ApolloProvider, gql, useQuery } from '@apollo/client'
 import { client } from './lib/apollo'
+import { Router } from './Router'
+import { BrowserRouter } from 'react-router-dom'
  
-
-const GET_LESSONS_QUERY = gql`
-  query {
-    lessons {
-      id
-      title
-    }
-  }
-`
 
 interface Lesson {
   id:string
@@ -21,16 +12,14 @@ interface Lesson {
 }
 
 function App() {
-  const { data } = useQuery<{ lessons: Lesson[]}>(GET_LESSONS_QUERY)
  
+  return( 
+    <ApolloProvider client={client}>
+      <BrowserRouter>
+        <Router/>
+      </BrowserRouter>
+    </ApolloProvider>
 
-  return(
-    <Event/>
-    // <ul>
-    //   {data?.lessons.map(lesson => {
-    //     return <li key={lesson.id}>{lesson.title}</li>
-    //   })}
-    // </ul>
   )
 }
 

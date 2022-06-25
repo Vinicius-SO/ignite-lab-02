@@ -1,15 +1,67 @@
 import { DefaultUi, Player, Youtube } from "@vime/react";
 import { CaretRight, DiscordLogo, FileArrowDown, Lightning } from "phosphor-react";
+import { gql } from "@apollo/client/core";
 
 import '@vime/core/themes/default.css'
+import { useQuery } from "@apollo/client";
 
-export function Video (){
+
+const GET_LESSON_BY_SLUG = gql`
+    query GetLessonBySlug ($slug:String) {
+        lesson(where: {slug: $slug}) {
+            title
+            videoId
+            description
+            teacher {
+            name
+            bio
+            avatarURL
+            }
+        }
+    }
+
+`
+
+interface GetLessonBySlugResponse {
+    lesson: {
+        title:string
+        videoId:string
+        description:string
+        teacher: {
+            name:string
+            bio:string
+            avatarURL:string
+        }
+    }
+}
+
+interface VideoProps {
+    lessonSlug: string
+}
+
+export function Video ({lessonSlug}:VideoProps){
+
+    const { data } = useQuery<GetLessonBySlugResponse>(GET_LESSON_BY_SLUG,{
+        variables:{
+            slug: lessonSlug
+        }
+    })
+
+    if(!data) {
+        return(
+            <div className="flex-1">
+                <p> Carregando ...</p>
+            </div>
+        )
+}
+
+    console.log(data)
     return (
         <div className="flex-1">
             <div className="bg-black flex justify-center">
                 <div className="w-full h-full max-ww[1100px] max-h-[60vh] aspect-video">
                     <Player>
-                        <Youtube videoId='Ox_zb2cs9zM'/>
+                        <Youtube videoId={data.lesson.videoId}/>
                         <DefaultUi/>
                     </Player>
                 </div>
@@ -19,21 +71,21 @@ export function Video (){
                 <div className="flex items-start gap-16">
                     <div className="flex-1">
                         <h1 className="text-2xl font-bold">
-                            Aula 01 - Abertura do IgniteLab 
+                            {data.lesson.title}
                         </h1>
                         <p className="mt-4 text-gray-200 leading-relaxed">
-                        Na aula 1 você vai entender quais são as oportunidades que você pode ter se especializando em ReactJS e porque essa é a decisão mais inteligente pra sua carreira no momento!
+                            {data.lesson.description}
                         </p>
                         <div className="flex items-center gap-4 mt-6">
                             <img 
                             className="h-16 w-16 rounded-full border-blue-500"
-                            src="https://github.com/diego3g.png" alt="Profile" />
+                            src={data.lesson.teacher.avatarURL} alt="Profile" />
                             <div>
                                 <strong className="font-bold text-2xl block">
-                                    Diego Fernandes
+                                    {data.lesson.teacher.name}
                                 </strong>
                                 <span className="text-gray-200 text-sm block">
-                                    CTO @ Rockeaseat
+                                    {data.lesson.teacher.bio}
                                 </span>
                             </div>
                         
