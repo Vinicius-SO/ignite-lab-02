@@ -7,18 +7,18 @@ import { useQuery } from "@apollo/client";
 
 
 const GET_LESSON_BY_SLUG = gql`
-    query GetLessonBySlug ($slug:String) {
-        lesson(where: {slug: $slug}) {
-            title
-            videoId
-            description
-            teacher {
-            name
-            bio
-            avatarURL
-            }
-        }
+ query GetLessonBySlug ($slug: String) {
+  lesson(where: {slug: $slug}) {
+    title
+    videoId
+    description
+    teacher {
+      name
+      bio
+      avatarURL
     }
+  }
+}
 
 `
 
@@ -46,6 +46,7 @@ export function Video ({lessonSlug}:VideoProps){
             slug: lessonSlug
         }
     })
+    console.log(lessonSlug)
 
     if(!data) {
         return(
@@ -53,7 +54,7 @@ export function Video ({lessonSlug}:VideoProps){
                 <p> Carregando ...</p>
             </div>
         )
-}
+    }
 
     console.log(data)
     return (
